@@ -1,0 +1,41 @@
+//Parte 2: Controle do Motor DC
+void controleMotorDC(char comando) {
+  if (comando == 'W') {
+    Frente = true;
+    Re = false;
+    freio = 0;
+  } else if (comando == 'w') {
+    freio = 1;
+  } else if (comando == 'S') {
+    Re = true;
+    Frente = false;
+    freio = 0;
+  } else if (comando == 's') {
+    freio = 1;
+  }
+
+  if (Re) {
+    digitalWrite(LUZ_RE, HIGH);
+    if (!freio) {
+      ledcWrite(10, 255);
+      ledcWrite(11, 0);
+    } else {
+      ledcWrite(10, 0);
+      ledcWrite(11, 0);
+      digitalWrite(LUZ_FREIO, HIGH);
+    }
+  } else {
+    digitalWrite(LUZ_RE, LOW);
+  }
+
+  if (Frente) {
+    if (!freio) {
+      ledcWrite(10, 0);
+      ledcWrite(11, 255);
+    } else {
+      ledcWrite(10, 0);
+      ledcWrite(11, 0);
+      digitalWrite(LUZ_FREIO, HIGH);
+    }
+  }
+}

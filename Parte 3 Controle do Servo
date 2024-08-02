@@ -1,0 +1,33 @@
+         //Parte 3: Controle do Servo
+
+void controleServo(char comando) {
+  if (comando == 'Y') {
+    if (SerialBT.available() >= 4) {
+      comando = SerialBT.read();
+      joyEsquerdaY = comando;
+      SerialBT.write(joyEsquerdaY);
+      comando = SerialBT.read();
+      joyEsquerdaX = comando;
+      SerialBT.write(joyEsquerdaX);
+      comando = SerialBT.read();
+      joyDireitaY = comando;
+      SerialBT.write(joyDireitaY);
+      comando = SerialBT.read();
+      joyDireitaX = comando;
+      SerialBT.write(joyDireitaX);
+      PWM = map(joyDireitaY, 0, 255, 0, 255);
+      servoDirecao.write(map(joyDireitaX, 0, 255, 0, 180));
+      if (joyDireitaY <= 110) {
+        Re = 1;
+        Frente = 0;
+        freio = 0;
+      } else if (joyDireitaY >= 140) {
+        Frente = 1;
+        Re = 0;
+        freio = 0;
+      } else {
+        freio = 1;
+      }
+    }
+  }
+}

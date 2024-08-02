@@ -1,0 +1,79 @@
+//Aqui está o código dividido em partes para facilitar o diagnóstico:
+
+//Parte 1: Configuração inicial
+
+#include "BluetoothSerial.h"  
+#include <ESP32Servo.h>       
+
+BluetoothSerial SerialBT;  
+char DadosRecebidos;  
+
+Servo servoDirecao;  
+Servo servoAux1;     
+Servo servoAux2;     
+Servo servoAux3;     
+
+boolean AtivaFreio = 1;  
+
+#define FAROL 15
+#define LUZ_FREIO 4
+#define SETA_DIREITA 16
+#define SETA_ESQUERDA 17
+#define LUZ_RE 5
+
+#define SERVO_DIRECAO 2
+#define SERVO_AUX01 12
+#define SERVO_AUX02 14
+#define SERVO_AUX03 27
+
+#define PONTE_H_IN01 25
+#define PONTE_H_IN02 26
+
+boolean AuxPiscaAlerta = 0;
+
+int joyDireitaX = 128;
+int joyDireitaY = 128;
+int joyEsquerdaX = 128;
+int joyEsquerdaY = 128;
+
+boolean Re = 0;
+boolean Frente = true;
+boolean freio = 0;
+
+int PWM;
+
+uint32_t Millis_PiscaAlerta, Millis_SetaDireita, Millis_SetaEsquerda;
+
+bool Painel = true;
+
+void setup() {
+  Serial.begin(115200); 
+
+  SerialBT.begin("Opala LowRider");  
+  Serial.println("O dispositivo já pode ser pareado!");
+
+  ledcAttachPin(PONTE_H_IN01, 10);  
+  ledcSetup(10, 500, 8);            
+
+  ledcAttachPin(PONTE_H_IN02, 11);
+  ledcSetup(11, 500, 8);
+
+  pinMode(FAROL, OUTPUT);          
+  pinMode(LUZ_FREIO, OUTPUT);      
+  pinMode(SETA_DIREITA, OUTPUT);   
+  pinMode(SETA_ESQUERDA, OUTPUT);  
+  pinMode(LUZ_RE, OUTPUT);         
+
+  servoDirecao.attach(SERVO_DIRECAO);
+  servoAux1.attach(SERVO_AUX01);
+  servoAux2.attach(SERVO_AUX02);
+  servoAux3.attach(SERVO_AUX03);
+
+  servoDirecao.write(90);
+  servoAux1.write(90);
+  servoAux2.write(90);
+  servoAux3.write(110);
+
+  ledcAttachPin(LUZ_FREIO, 13);
+  ledcSetup(13, 500, 8);
+}

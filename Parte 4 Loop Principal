@@ -1,0 +1,100 @@
+//Parte 4: Loop Principal
+void loop() {
+  if (SerialBT.connected()) {
+    if (Painel) {
+      GeraPainel();
+      digitalWrite(SETA_DIREITA, LOW);
+      digitalWrite(SETA_ESQUERDA, LOW);
+    }
+    Painel = false;
+
+    if (SerialBT.available()) {
+      DadosRecebidos = SerialBT.read();
+
+      // Farol
+      if (DadosRecebidos == 'R') {
+        digitalWrite(FAROL, HIGH);
+        ledcWrite(13, 100);
+      } else if (DadosRecebidos == 'r') {
+        digitalWrite(FAROL, LOW);
+        ledcWrite(13, 0);
+      }
+
+      // Pisca-Alerta
+      if (DadosRecebidos == 'F') {
+        AuxPiscaAlerta = HIGH;
+        digitalWrite(SETA_DIREITA, LOW);
+        digitalWrite(SETA_ESQUERDA, LOW);
+      } else if (DadosRecebidos == 'f') {
+        AuxPiscaAlerta = LOW;
+        digitalWrite(SETA_DIREITA, LOW);
+        digitalWrite(SETA_ESQUERDA, LOW);
+      }
+
+      if (AuxPiscaAlerta) {
+        if (millis() - Millis_PiscaAlerta > 375) {
+          digitalWrite(SETA_DIREITA, HIGH);
+          digitalWrite(SETA_ESQUERDA, HIGH);
+          if (millis() - Millis_PiscaAlerta > 750) {
+            digitalWrite(SETA_DIREITA, LOW);
+            digitalWrite(SETA_ESQUERDA, LOW);
+            Millis_PiscaAlerta = millis();
+          }
+        }
+      }
+
+      controleMotorDC(DadosRecebidos);
+      controleServo(DadosRecebidos);
+    }
+  } else {
+    if (!Painel) {
+      Painel = true;
+      Serial.println("O dispositivo foi desconectado!\n");
+    }
+    digitalWrite(FAROL, LOW);
+    digitalWrite(LUZ_FREIO, LOW);
+    digitalWrite(SETA_DIREITA, LOW);
+    digitalWrite(SETA_ESQUERDA, LOW);
+    digitalWrite(LUZ_RE, LOW);
+    ledcWrite(10, 0);
+    ledcWrite(11, 0);
+  }
+}
+
+void GeraPainel() {
+  SerialBT.print("CT100");
+  SerialBT.print("\r");
+
+  SerialBT.print("TTCarro OPALA Lowrider");
+  SerialBT.print("\r");
+
+  SerialBT.print("LTFarol");
+  SerialBT.print("\r");
+
+  SerialBT.print("LTPisca Alerta");
+  SerialBT.print("\r");
+
+  SerialBT.print("LTSeta Direita");
+  SerialBT.print("\r");
+
+  SerialBT.print("LTSeta Esquerda");
+  SerialBT.print("\r");
+
+  SerialBT.print("RTMotor Frente");
+  SerialBT.print("\r");
+
+  SerialBT.print("RTMotor Trás");
+  SerialBT.print("\r");
+
+  SerialBT.print("XRJoyY#Direita");
+  SerialBT.print("\r");
+
+  SerialBT.print("YRJoyX#Direita");
+  SerialBT.print("\r");
+
+  SerialBT.print("XLJoyY#Esquerda");
+  SerialBT.print("\r");
+
+  SerialBT.print("YLJoyX#Esquerda");
+  SerialBT.print("\r");
+}
